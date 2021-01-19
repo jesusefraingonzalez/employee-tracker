@@ -85,8 +85,7 @@ connection.connect((err) => {
     viewRoles();
     viewDepartments();
     // addDepartment();
-    addEmployee();
-
+    addRole();
 })
 
 
@@ -156,6 +155,33 @@ function addEmployee() {
         .then((res) => {
             console.log(res);
             connection.query("INSERT INTO employees SET ?;", res, (err, result) => {
+                if (err) throw err;
+                console.log(result);
+            });
+        });
+}
+
+function addRole() {
+    inquirer
+        .prompt([
+            {
+                name: "title",
+                type: "input",
+                message: "Enter the role name: "
+            }, 
+            {
+                name: "salary",
+                type: "input",
+                message: "Enter the role salary: "
+            },
+            {
+                name: "department_id",
+                type: "input",
+                message: "Enter department id: "
+            }
+        ])
+        .then((res) => {
+            connection.query("INSERT INTO roles SET ?;", res, (err, result) => {
                 if (err) throw err;
                 console.log(result);
             });
