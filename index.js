@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
+const cTable = require('console.table');
 // const {mysqlLogin, userPrompt} = require('./inquirer-questions.js')
 
 let loginQuestions = [
@@ -23,7 +24,7 @@ let questions = [
     },
     {
         type: "list",
-        name: "roleOperations",
+        name: "roleOperation",
         message: "Select operation: ",
         choices: ["Create", "Read", "Update"],
         when: (answers) => {
@@ -32,7 +33,7 @@ let questions = [
     },
     {
         type: "list",
-        name: "operations",
+        name: "operation",
         message: "Select operation: ",
         choices: ["Create", "Read"],
         when: (answers) => {
@@ -59,18 +60,46 @@ let questions = [
     },
 ];
 
+let deptartmentQuestions = [
+    {
+        type: "input",
+        name: "department",
+        message: "Enter department name: "
+    },
+];
 
-inquirer.prompt(loginQuestions).then((res) => {
-    let connection = mysql.createConnection({
-        host: "localhost",
-        port: 3306,
-        user: res.username,
-        password: res.password,
-        database: "employees_db"
-    });
+
+// inquirer.prompt(loginQuestions).then((res) => {
+//     let connection = mysql.createConnection({
+//         host: "localhost",
+//         port: 3306,
+//         user: res.username,
+//         password: res.password,
+//         database: "employees_db"
+//     });
     
-    connection.connect((err) => {
-        if(err) throw err;
-        console.log('Now connected to mysql');
-    })
-});
+//     connection.connect((err) => {
+//         if(err) throw err;
+//         console.log('Now connected to mysql');
+//     })
+// });
+
+function askQuestions(){
+    inquirer.prompt(questions).then((res) => {
+        console.log(res);
+    });
+}
+
+askQuestions();
+
+function addDepartment(departmentName) {
+    inquirer
+        .prompt({
+            name: "deptartmentName",
+            type: "input",
+            message: "Enter department name: "
+        })
+        .then((res) => {
+            connection.query("INSERT INTO departments(name) VALUES (?)", departmentName);
+        });    
+}
