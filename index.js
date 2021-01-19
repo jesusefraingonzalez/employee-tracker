@@ -60,7 +60,7 @@ let questions = [
     },
 ];
 
-let deptartmentQuestions = [
+let departmentQuestions = [
     {
         type: "input",
         name: "department",
@@ -81,7 +81,10 @@ let connection = mysql.createConnection({
 connection.connect((err) => {
     if (err) throw err;
     console.log('Now connected to mysql');
-    addDepartment();
+    viewEmployees();
+    viewRoles();
+    viewDepartments();
+    // addDepartment();
 
 })
 
@@ -97,19 +100,36 @@ function viewDepartments(){
     connection.query('SELECT * FROM departments;', (err , res) => {
         if(err) throw err;
         console.table(res);
-    })
+    });
 }
+
+function viewEmployees() {
+    connection.query("SELECT * from employees",  (err, res) => {
+        if(err) throw err;
+        console.table(res);
+    });
+}
+
+function viewRoles() {
+    connection.query("SELECT * from roles",  (err, res) => {
+        if(err) throw err;
+        console.table(res);
+    });
+}
+
+
 function addDepartment(departmentName) {
     inquirer
         .prompt({
-            name: "deptartmentName",
+            name: "departmentName",
             type: "input",
             message: "Enter department name: "
         })
         .then((res) => {
-            connection.query("INSERT INTO departments(name) VALUES (?);", res.departmentName, (err, res) => {
+            connection.query("INSERT INTO departments (name) VALUES (?);", res.departmentName, (err, result) => {
                 if(err) throw err;
-                console.log(res);
+                console.log(result);
             });
         });
 }
+
