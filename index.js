@@ -69,29 +69,36 @@ let deptartmentQuestions = [
 ];
 
 
-// inquirer.prompt(loginQuestions).then((res) => {
-//     let connection = mysql.createConnection({
-//         host: "localhost",
-//         port: 3306,
-//         user: res.username,
-//         password: res.password,
-//         database: "employees_db"
-//     });
-    
-//     connection.connect((err) => {
-//         if(err) throw err;
-//         console.log('Now connected to mysql');
-//     })
-// });
 
-function askQuestions(){
+let connection = mysql.createConnection({
+    host: "localhost",
+    port: 3306,
+    user: "root",
+    password: "root",
+    database: "employees_db"
+});
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('Now connected to mysql');
+    addDepartment();
+
+})
+
+
+function askQuestions() {
     inquirer.prompt(questions).then((res) => {
         console.log(res);
     });
 }
 
-askQuestions();
 
+function viewDepartments(){
+    connection.query('SELECT * FROM departments;', (err , res) => {
+        if(err) throw err;
+        console.table(res);
+    })
+}
 function addDepartment(departmentName) {
     inquirer
         .prompt({
@@ -100,6 +107,9 @@ function addDepartment(departmentName) {
             message: "Enter department name: "
         })
         .then((res) => {
-            connection.query("INSERT INTO departments(name) VALUES (?)", departmentName);
-        });    
+            connection.query("INSERT INTO departments(name) VALUES (?);", res.departmentName, (err, res) => {
+                if(err) throw err;
+                console.log(res);
+            });
+        });
 }
