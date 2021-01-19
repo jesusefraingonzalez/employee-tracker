@@ -85,6 +85,7 @@ connection.connect((err) => {
     viewRoles();
     viewDepartments();
     // addDepartment();
+    addEmployee();
 
 })
 
@@ -96,29 +97,29 @@ function askQuestions() {
 }
 
 
-function viewDepartments(){
-    connection.query('SELECT * FROM departments;', (err , res) => {
-        if(err) throw err;
+function viewDepartments() {
+    connection.query('SELECT * FROM departments;', (err, res) => {
+        if (err) throw err;
         console.table(res);
     });
 }
 
 function viewEmployees() {
-    connection.query("SELECT * from employees",  (err, res) => {
-        if(err) throw err;
+    connection.query("SELECT * from employees", (err, res) => {
+        if (err) throw err;
         console.table(res);
     });
 }
 
 function viewRoles() {
-    connection.query("SELECT * from roles",  (err, res) => {
-        if(err) throw err;
+    connection.query("SELECT * from roles", (err, res) => {
+        if (err) throw err;
         console.table(res);
     });
 }
 
 
-function addDepartment(departmentName) {
+function addDepartment() {
     inquirer
         .prompt({
             name: "departmentName",
@@ -127,9 +128,36 @@ function addDepartment(departmentName) {
         })
         .then((res) => {
             connection.query("INSERT INTO departments (name) VALUES (?);", res.departmentName, (err, result) => {
-                if(err) throw err;
+                if (err) throw err;
                 console.log(result);
             });
         });
 }
 
+function addEmployee() {
+    inquirer
+        .prompt([
+            {
+                name: "first_name",
+                type: "input",
+                message: "Enter employee first name: "
+            },
+            {
+                name: "last_name",
+                type: "input",
+                message: "Enter employee last name: "
+            },
+            {
+                type: "input",
+                name: "role_id",
+                message: "Enter role id: "
+            }
+        ])
+        .then((res) => {
+            console.log(res);
+            connection.query("INSERT INTO employees SET ?;", res, (err, result) => {
+                if (err) throw err;
+                console.log(result);
+            });
+        });
+}
