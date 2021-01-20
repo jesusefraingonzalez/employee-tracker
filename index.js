@@ -2,21 +2,33 @@ const inquirer = require('inquirer');
 const mysql = require('mysql');
 const cTable = require('console.table');
 // const {mysqlLogin, userPrompt} = require('./inquirer-questions.js')
+let connection;
+inquirer.prompt([
+    {
+        name: "mysqlUser",
+        type: "input",
+        message: "Enter mysql username"
+    },
+    {
+        name: "mysqlPass",
+        type: "password",
+        message: "Enter mysql password"
+    }
+]).then((res) => {
+    connection = mysql.createConnection({
+        host: "localhost",
+        port: 3306,
+        user: res.mysqlUser,
+        password: res.mysqlPass,
+        database: "employees_db"
+    });
 
-let connection = mysql.createConnection({
-    host: "localhost",
-    port: 3306,
-    user: "root",
-    password: "root",
-    database: "employees_db"
+    connection.connect((err) => {
+        if (err) throw err;
+        console.log('Now connected to mysql');
+        askQuestions();
+    });
 });
-
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Now connected to mysql');
-    askQuestions();
-})
-
 
 function askQuestions() {
     let choices = [
@@ -184,7 +196,7 @@ function updateEmployeeRole() {
         }
     ]).then((res) => {
         connection.query("UPDATE employees SET role_id = ? WHERE id = ?", [res.newRoleId, res.employeeId], (err, result) => {
-            if(err) throw err;
+            if (err) throw err;
             console.log(result);
             askAgain();
         });
@@ -200,12 +212,12 @@ function askAgain() {
             message: "Continue?",
             default: true
         }
-    ).then((res)=> {
+    ).then((res) => {
         if (res.continue) askQuestions()
-        else{
+        else {
             console.log("Bye!");
             connection.end();
         }
-    
+
     })
 }
