@@ -68,11 +68,11 @@ function askQuestions() {
         });
 }
 
-
 function viewDepartments() {
     connection.query('SELECT * FROM departments;', (err, res) => {
         if (err) throw err;
         console.table(res);
+        askAgain();
     });
 }
 
@@ -80,6 +80,7 @@ function viewEmployees() {
     connection.query("SELECT * from employees", (err, res) => {
         if (err) throw err;
         console.table(res);
+        askAgain();
     });
 }
 
@@ -87,9 +88,9 @@ function viewRoles() {
     connection.query("SELECT * from roles", (err, res) => {
         if (err) throw err;
         console.table(res);
+        askAgain();
     });
 }
-
 
 function addDepartment() {
     inquirer
@@ -102,6 +103,7 @@ function addDepartment() {
             connection.query("INSERT INTO departments (name) VALUES (?);", res.departmentName, (err, result) => {
                 if (err) throw err;
                 console.log(result);
+                askAgain();
             });
         });
 }
@@ -130,6 +132,7 @@ function addEmployee() {
             connection.query("INSERT INTO employees SET ?;", res, (err, result) => {
                 if (err) throw err;
                 console.log(result);
+                askAgain();
             });
         });
 }
@@ -157,6 +160,22 @@ function addRole() {
             connection.query("INSERT INTO roles SET ?;", res, (err, result) => {
                 if (err) throw err;
                 console.log(result);
+                askAgain();
             });
         });
+}
+
+function askAgain() {
+    console.log('\n\n')
+    inquirer.prompt(
+        {
+            name: "continue",
+            type: "confirm",
+            message: "Continue?",
+            default: true
+        }
+    ).then((res)=> {
+        if (res.continue) askQuestions();
+        connection.end();
+    })
 }
