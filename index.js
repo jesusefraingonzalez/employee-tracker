@@ -125,6 +125,11 @@ function addEmployee() {
                 type: "input",
                 name: "role_id",
                 message: "Enter role id: "
+            },
+            {
+                name: "manager_id",
+                type: "input",
+                message: "Enter the employee's manager's ID: "
             }
         ])
         .then((res) => {
@@ -196,8 +201,11 @@ function askAgain() {
             default: true
         }
     ).then((res)=> {
-        if (res.continue) askQuestions();
-        console.log("Bye!");
-        connection.end();
+        if (res.continue) askQuestions()
+        else{
+            console.log("Bye!");
+            connection.end();
+        }
+    
     })
 }
