@@ -197,6 +197,7 @@ function askAgain() {
         }
     ).then((res)=> {
         if (res.continue) askQuestions();
+        console.log("Bye!");
         connection.end();
     })
 }
