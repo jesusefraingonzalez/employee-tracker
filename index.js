@@ -60,16 +60,6 @@ let questions = [
     },
 ];
 
-let departmentQuestions = [
-    {
-        type: "input",
-        name: "department",
-        message: "Enter department name: "
-    },
-];
-
-
-
 let connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -84,15 +74,55 @@ connection.connect((err) => {
     viewEmployees();
     viewRoles();
     viewDepartments();
-    // addDepartment();
-    addRole();
 })
 
 
 function askQuestions() {
-    inquirer.prompt(questions).then((res) => {
-        console.log(res);
-    });
+    let choices = [
+        "Add a departmenet",
+        "Add a role",
+        "Add an employee",
+        "View the departments",
+        "View available roles",
+        "View employees",
+        "Update emloyee roles",
+        "Exit"
+    ]
+    inquirer.prompt([
+        {
+            type: "list",
+            name: "option",
+            message: "What would you like to do? ",
+            choices: choices
+        }
+    ])
+        .then((res) => {
+            switch (res.option) {
+                case "Add a department":
+                    addDepartment();
+                    break;
+                case "Add a role":
+                    addRole();
+                    break;
+                case "Add an employee":
+                    addEmployee();
+                    break;
+                case "View the departments":
+                    viewDepartments();
+                    break;
+                case "View available roles":
+                    viewRoles();
+                    break;
+                case "View employees":
+                    viewEmployees();
+                    break;
+                case "Update employee roles":
+                    updateEmployeeRole();
+                    break;
+                default:
+                    break;
+            }
+        });
 }
 
 
@@ -168,7 +198,7 @@ function addRole() {
                 name: "title",
                 type: "input",
                 message: "Enter the role name: "
-            }, 
+            },
             {
                 name: "salary",
                 type: "input",
