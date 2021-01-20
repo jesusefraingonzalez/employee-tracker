@@ -26,7 +26,7 @@ function askQuestions() {
         "View the departments",
         "View available roles",
         "View employees",
-        "Update emloyee roles",
+        "Update employee roles",
         "Exit"
     ]
     inquirer.prompt([
@@ -163,6 +163,27 @@ function addRole() {
                 askAgain();
             });
         });
+}
+
+function updateEmployeeRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "employeeId",
+            message: "Enter employee ID: "
+        },
+        {
+            type: "input",
+            name: "newRoleId",
+            message: "Enter new role ID: "
+        }
+    ]).then((res) => {
+        connection.query("UPDATE employees SET role_id = ? WHERE id = ?", [res.newRoleId, res.employeeId], (err, result) => {
+            if(err) throw err;
+            console.log(result);
+            askAgain();
+        });
+    });
 }
 
 function askAgain() {
