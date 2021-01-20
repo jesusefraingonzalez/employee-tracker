@@ -89,11 +89,13 @@ function viewDepartments() {
 }
 
 function viewEmployees() {
-    connection.query("SELECT * from employees", (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        askAgain();
-    });
+    connection.query(
+        "SELECT * from employees",
+        (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            askAgain();
+        });
 }
 
 function viewRoles() {
@@ -121,37 +123,77 @@ function addDepartment() {
 }
 
 function addEmployee() {
-    inquirer
-        .prompt([
-            {
-                name: "first_name",
-                type: "input",
-                message: "Enter employee first name: "
-            },
-            {
-                name: "last_name",
-                type: "input",
-                message: "Enter employee last name: "
-            },
-            {
-                type: "input",
-                name: "role_id",
-                message: "Enter role id: "
-            },
-            {
-                name: "manager_id",
-                type: "input",
-                message: "Enter the employee's manager's ID: "
-            }
-        ])
-        .then((res) => {
-            console.log(res);
-            connection.query("INSERT INTO employees SET ?;", res, (err, result) => {
-                if (err) throw err;
-                console.log(result);
-                askAgain();
-            });
+    connection.query("SELECT * FROM roles", (err, response) => {
+        if (err) throw err;
+        let titles = response.map((role) => {
+            return role.title;
         });
+        let roleIds = response.map(role => { return role.id })
+        connection.query("SELECT * FROM EMPLOYEES", (err, response) => {
+            if (err) throw err;
+            let managers = response.map(employee => { return employee.first_name });
+            let managerIds = response.map(employee => { return employee.id });
+            inquirer
+                .prompt([
+                    {
+                        name: "first_name",
+                        type: "input",
+                        message: "Enter employee first name: "
+                    },
+                    {
+                        name: "last_name",
+                        type: "input",
+                        message: "Enter employee last name: "
+                    },
+                    {
+                        type: "list",
+                        name: "role",
+                        message: "Choose role: ",
+                        choices: titles
+                    },
+                    {
+                        name: "manager",
+                        type: "list",
+                        message: "Enter the employee's manager's ID: ",
+                        choices: managers.concat(["null"])
+                    }
+                ])
+                .then((res) => {
+                    
+                    //find the index of the title in the title array
+                    let role_index = titles.findIndex((ans) => {
+                        return ans === res.role; 
+                    });
+                    // save the value of the role id from the roleIds index
+                    let role_id = roleIds[role_index];
+
+                    //find the index of the correct manager in the managers array
+                    let manager_index = managers.findIndex((ans) => {
+                        return ans === res.manager;
+                    });
+                    //set manager_id to the value of the manager id from the managerIds array 
+                    let manager_id = managerIds[manager_index];
+
+                    // create employee object
+                    let employee = {
+                        first_name: res.first_name,
+                        last_name: res.last_name,
+                        role_id: role_id,
+                        manager_id: manager_id
+                    }
+
+                    // insert the employee into employee database
+                    connection.query(
+                        "INSERT INTO employees SET ?;",
+                        employee, (err, result) => {
+                            if (err) throw err;
+                            console.log(result);
+                            askAgain();
+                        });
+                });
+        })
+
+    });
 }
 
 function addRole() {
